@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>روابطي | Link-in-Bio</title>
+    <meta name="description" content="صفحة لينك-تري بسيطة وسريعة الاستجابة مع تصميم أنيق وإحصائيات نقر محلية." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0f14;
+            --card: rgba(255, 255, 255, 0.05);
+            --text: #e8f0ff;
+            --muted: #9fb1c6;
+            --accent: #a855f7; /* الأرجواني */
+            --accent-2: #2dd4bf; /* الفيروزي */
+            --ring: rgba(45, 212, 191, 0.35);
+            --radius: 16px;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg: #f6f7fb;
+                --card: #fff;
+                --text: #0b1320;
+                --muted: #5b6470;
+                --ring: rgba(80, 120, 255, 0.25);
+            }
+        }
+
+        @keyframes background-pan {
+            from { background-position: 0% 0%; }
+            to { background-position: -200% 0%; }
+        }
+
+        @keyframes noise-move {
+            from { transform: translate(0, 0); }
+            to { transform: translate(100px, 100px); }
+        }
+        
+        @keyframes splash-fade-in {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Cairo", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            color: var(--text);
+            background: linear-gradient(135deg, #1e293b, #0b0f14, #1e293b);
+            background-size: 200% 200%;
+            animation: background-pan 30s linear infinite alternate;
+            display: grid;
+            place-items: center;
+            padding: 28px;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml;charset=UTF-8,<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#noiseFilter)" opacity="0.05"/></svg>') repeat;
+            pointer-events: none;
+            animation: noise-move 10s linear infinite;
+            z-index: -1;
+        }
+
+        .wrap {
+            width: min(720px, 100%);
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+
+        /* شاشة الترحيب */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        #splash-screen.fade-out {
+            opacity: 0;
+        }
+
+        #splash-screen .splash-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: splash-fade-in 1s ease-out;
+        }
+
+        #splash-screen img {
+            max-width: 150px;
+            height: auto;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.5);
+            animation: splash-fade-in 1s ease-out;
+        }
+
+        #splash-screen h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 800;
+            color: var(--text);
+            text-align: center;
+            line-height: 1.5;
+            padding: 0 20px;
+        }
+        
+        .accent {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        @keyframes fadeIn {
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+            padding: clamp(18px, 2.5vw, 28px);
+            position: relative;
+            overflow: hidden;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fadeIn 1.2s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        @keyframes highlight-move {
+            0% { transform: translate(-100%, -100%) rotate(45deg); }
+            100% { transform: translate(0, 0) rotate(45deg); }
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 100% 100%, transparent 60%, rgba(255, 255, 255, 0.08) 60%);
+            opacity: 0.1;
+            transform: translate(-100%, -100%) rotate(45deg);
+            animation: highlight-move 10s linear infinite;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .avatar {
+            width: 84px;
+            height: 84px;
+            border-radius: 20px;
+            object-fit: cover;
+            flex: 0 0 auto;
+            border: 2px solid var(--accent-2);
+            box-shadow: 0 0 20px var(--accent-2);
+            transition: 0.3s transform;
+        }
+
+        .avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .title h1 {
+            margin: 0;
+            font-size: clamp(20px, 2.4vw, 28px);
+            font-weight: 800;
+        }
+
+        .title p {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .badge {
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* روابط المحتوى الرئيسية */
+        .content-links-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            text-decoration: none;
+            color: inherit;
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            border: 1px solid var(--accent);
+            border-radius: 14px;
+            padding: 18px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.3s transform, 0.3s box-shadow;
+        }
+        
+        .content-links-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(168, 85, 247, 0.4);
+        }
+
+        /* نافذة الروابط المنبثقة (Modal) */
+        #content-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none; /* مخفي في البداية */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        #content-modal.visible {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .modal-content {
+            background: var(--card);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius);
+            padding: 24px;
+            width: min(500px, 90%);
+            position: relative;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: modal-slide-in 0.4s forwards;
+        }
+        
+        @keyframes modal-slide-in {
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-content .link {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 12px;
+        }
+        
+        .modal-content .link:last-child {
+            margin-bottom: 0;
+        }
+
+        /* زر الإغلاق */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            color: var(--muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s color;
+        }
+        
+        .close-btn:hover {
+            color: var(--text);
+        }
+
+
+        .links {
+            margin-top: 18px;
+            display: grid;
+            gap: 12px;
+        }
+
+        @keyframes linkSlideIn {
+            from {
+                transform: translateY(20px) scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .link-item {
+            opacity: 0;
+            animation: linkSlideIn 0.6s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
+            animation-delay: calc(var(--i) * 0.1s + 0.5s);
+        }
+
+        .link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            padding: 14px 16px;
+            transition: 0.3s transform, 0.3s border-color, 0.3s background;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link:hover {
+            transform: translateY(-2px) scale(1.02);
+            border-color: var(--accent);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
+        }
+
+        .link:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 6px var(--ring);
+        }
+
+        .link .icon {
+            width: 22px;
+            height: 22px;
+            opacity: 0.95;
+            flex: 0 0 auto;
+        }
+
+        .link .meta {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .link .meta strong {
+            font-weight: 700;
+        }
+
+        .link .meta small {
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 640px) {
+            .row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .footer {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            color: var(--muted);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        button.icon-btn {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            padding: 10px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.3s background, 0.3s transform, 0.3s border-color;
+        }
+
+        button.icon-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.15);
+            color: #a7f3d0;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-weight: 700;
+        }
+
+        .pill .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--accent);
+        }
+
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .stat {
+            position: relative;
+            font-size: 12px;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 10px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .stat .progress-bar {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            opacity: 0.2;
+            transform-origin: left;
+            transition: width 0.8s ease-out;
+        }
+
+        .glow {
+            position: absolute;
+            inset: auto -80px -80px auto;
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(closest-side, rgba(96, 165, 250, 0.25), transparent 70%);
+            filter: blur(30px);
+            pointer-events: none;
+            animation: glow-move 20s linear infinite alternate;
+        }
+
+        @keyframes glow-move {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100px, 50px); }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            border-radius: 5px;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+            z-index: 1000;
+        }
+
+        .toast.hide {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="splash-screen">
+        <div class="splash-content">
+            <img src="mo.png" alt="صورة ترحيب" /> 
+            <h1>أهلاً بكم في كوكب <span class="accent">DEV MO YASSER</span></h1>
+        </div>
+    </div>
+
+    <main class="wrap">
+        <section class="card" aria-label="الملف الشخصي وروابط السيرة">
+            <div class="glow" aria-hidden="true"></div>
+            <header class="header">
+                <img class="avatar" src="mo.png" alt="صورة شخصية" />
+                <div class="title">
+                    <h1> Mohamed Yasser <span class="accent">| Software Engineer</span></h1>
+                    <p>Full Stack . Web Dev Enthusiast . Building Software Products</p>
+                    <div class="badges" role="list" aria-label="الإنجازات">
+                        <span class="badge">متاح للعمل الحر</span>
+                        <span class="badge">رد سريع ⏱</span>
+                        <span class="badge">مشاريع حقيقية</span>
+                    </div>
+                </div>
+            </header>
+
+       <div class="links" role="list" aria-label="روابط">
+    <button class="content-links-btn" id="open-modal">
+        روابط المحتوى
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l9 4v6c0 5-3.8 9.7-9 10-5.2-.3-9-5-9-10V6l9-4zm0 2.2L5 6.6v5.2c0 4 2.9 7.9 7 8.2 4.1-.3 7-4.2 7-8.2V6.6l-7-2.4z"/></svg>
+    </button>
+    
+    <div class="row">
+        <a class="link link-item" style="--i:2;" href="https://www.linkedin.com/in/mohamed-yasser-13349a25a/?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" target="_blank" rel="noopener" data-key="linkedin">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v16H0zM8 8h4.8v2.2h.07c.67-1.27 2.3-2.6 4.73-2.6C21.4 7.6 24 10 24 14.3V24h-5v-8.6c0-2.05-.04-4.69-2.86-4.69-2.86 0-3.29 2.23-3.29 4.53V24H8z"/></svg>
+            <div class="meta"><strong>LinkedIn</strong><small>تواصل معايا مهنياً</small></div>
+        </a>
+
+        <a class="link link-item" style="--i:3;" href="https://github.com/MoYasser1" target="_blank" rel="noopener" data-key="github">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a12 12 0 00-3.79 23.4c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.35-1.76-1.35-1.76-1.1-.75.08-.74.08-.74 1.22.09 1.86 1.26 1.86 1.26 1.08 1.85 2.83 1.32 3.52 1.01.11-.79.42-1.32.76-1.62-2.66-.3-5.46-1.33-5.46-5.91 0-1.31.47-2.38 1.25-3.22-.13-.31-.54-1.56.12-3.26 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 016 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.7.25 2.95.12 3.26.78.84 1.25 1.91 1.25 3.22 0 4.59-2.8 5.61-5.47 5.91.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.82.58A12 12 0 0012 .5z"/></svg>
+            <div class="meta"><strong>GitHub</strong><small>الكود والمشاريع</small></div>
+        </a>
+    </div>
+
+    <div class="row">
+        <a class="link link-item" style="--i:4;" href="https://www.instagram.com/devmoyasser?igsh=Z3c1MHgwemYwdXlz&utm_source=qr" target="_blank" rel="noopener" data-key="instagram">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.8 2h8.4C18.1 2 20 3.9 20 6.2v8.4c0 2.3-1.9 4.2-4.2 4.2H7.8C5.5 19 3.6 17.1 3.6 14.8V6.2C3.6 3.9 5.5 2 7.8 2zm8.4 1.6H7.8c-1.4 0-2.6 1.1-2.6 2.6v8.4c0 1.4 1.1 2.6 2.6 2.6h8.4c1.4 0 2.6-1.1 2.6-2.6V6.2c0-1.4-1.1-2.6-2.6-2.6zM12 7.6c-2.4 0-4.4 2-4.4 4.4S9.6 16.4 12 16.4 16.4 14.4 16.4 12 14.4 7.6 12 7.6zm0 1.6c1.5 0 2.8 1.2 2.8 2.8s-1.3 2.8-2.8 2.8-2.8-1.2-2.8-2.8 1.3-2.8 2.8-2.8zm6.5-4.4c0-.7-.6-1.3-1.3-1.3s-1.3.6-1.3 1.3.6 1.3 1.3 1.3 1.3-.6 1.3-1.3z"/></svg>
+            <div class="meta"><strong>Instagram</strong><small>صور ومقاطع من حياتي</small></div>
+        </a>
+        
+        <a class="link link-item" style="--i:5;" href="https://www.tiktok.com/@devmoyasser?_t=ZS-8zaHYX8UXs0&_r=1" target="_blank" rel="noopener" data-key="tiktok">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.3 2.5v18c0 .2-.1.3-.3.3s-.3-.1-.3-.3V2.5c0-.2.1-.3.3-.3s.3.1.3.3zM9.5 7.4c0 .2-.1.3-.3.3s-.3-.1-.3-.3V3.5c0-.2.1-.3.3-.3s.3.1.3.3v3.9zM15.1 4.5c0 .2-.1.3-.3.3s-.3-.1-.3-.3V2.5c0-.2.1-.3.3-.3s.3.1.3.3V4.5zM7.5 10.4c0 .2-.1.3-.3.3s-.3-.1-.3-.3V6.5c0-.2.1-.3.3-.3s.3.1.3.3v3.9zM17.1 6.5c0 .2-.1.3-.3.3s-.3-.1-.3-.3V3.5c0-.2.1-.3.3-.3s.3.1.3.3v3zM5.5 14.4c0 .2-.1.3-.3.3s-.3-.1-.3-.3V10.5c0-.2.1-.3.3-.3s.3.1.3.3v3.9zM19.1 8.5c0 .2-.1.3-.3.3s-.3-.1-.3-.3V6.5c0-.2.1-.3.3-.3s.3.1.3.3v2zM3.5 18.4c0 .2-.1.3-.3.3s-.3-.1-.3-.3V14.5c0-.2.1-.3.3-.3s.3.1.3.3v3.9zM21.1 10.5c0 .2-.1.3-.3.3s-.3-.1-.3-.3V8.5c0-.2.1-.3.3-.3s.3.1.3.3v2z"/></svg>
+            <div class="meta"><strong>TikTok</strong><small>فيديوهات قصيرة وممتعة</small></div>
+        </a>
+    </div>
+
+    <a class="link link-item" style="--i:6;" href="https://www.youtube.com/@devmoyasser" target="_blank" rel="noopener" data-key="youtube">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.5 5.2c-.3-.9-1-1.6-1.9-1.9C18.6 3 12 3 12 3s-6.6 0-7.6.3c-.9.3-1.6 1-1.9 1.9C2 6.6 2 12 2 12s0 5.4.3 6.8c.3.9 1 1.6 1.9 1.9C5.4 21 12 21 12 21s6.6 0 7.6-.3c.9-.3 1.6-1 1.9-1.9.3-1.4.3-6.8.3-6.8s0-5.4-.3-6.8zM10 16V8l6 4-6 4z"/></svg>
+        <div class="meta"><strong>YouTube</strong><small>دورات ومحتوى تعليمي</small></div>
+    </a>
+
+    <a class="link link-item" style="--i:7;" href="" target="_blank" rel="noopener" data-key="portfolio">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l9 4v6c0 5-3.8 9.7-9 10-5.2-.3-9-5-9-10V6l9-4zm0 2.2L5 6.6v5.2c0 4 2.9 7.9 7 8.2 4.1-.3 7-4.2 7-8.2V6.6l-7-2.4z"/></svg>
+        <div class="meta"><strong>Portfolio</strong><small>شوف أعمالي وتفاصيل الخدمات</small></div>
+    </a>
+
+    <a class="link link-item" style="--i:10;" href="/MohamedYasserFullStackCV2025.pdf.pdf" target="_blank" rel="noopener" data-key="cv">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 2h9l5 5v13a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2zm8 1.5V8h4.5L14 3.5zM7 12h10v2H7v-2zm0 4h10v2H7v-2z"/></svg>
+        <div class="meta"><strong>السيرة الذاتية</strong><small>PDF • تنزيل مباشر</small></div>
+    </a>
+
+    <a class="link link-item" style="--i:11;" href="mailto:mohamed0yasser@gmail.com" data-key="email">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2 6a2 2 0 012-2h16a2 2 0 012 2v.2l-10 6.25L2 6.2V6zm0 3.05l9.54 5.95a1 1 0 001.06 0L22 9.05V18a2 2 0 01-2 2H4a2 2 0 01-2-2V9.05z"/></svg>
+        <div class="meta"><strong>Email</strong><small>mohamed0yasser@gmail.com</small></div>
+    </a>
+</div>
+
+            <div class="footer" aria-label="الإعدادات والإحصاءات">
+                <div class="actions">
+                    <button class="icon-btn" id="copy" aria-label="نسخ عنوان الصفحة">📋 نسخ اللينك</button>
+                    <button class="icon-btn" id="toggleDir" aria-label="تبديل اتجاه الصفحة">🔁 RTL/LTR</button>
+                    <button class="icon-btn" id="resetStats" aria-label="تصفير الإحصاءات">🧹 تصفير الإحصاء</button>
+                </div>
+                <div class="stats" id="stats" aria-live="polite"></div>
+            </div>
+
+            <div style="margin-top:12px">
+                <span class="pill"><span class="dot" aria-hidden="true"></span> الاختيار الافضل</span>
+            </div>
+        </section>
+    </main>
+
+<div id="content-modal">
+    <div class="modal-content">
+        <button class="close-btn" id="close-modal">&times;</button>
+                    <a class="link" href="https://gemini.google/students/" target="_blank" rel="noopener" data-key="readme-generator">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM9 11h6v2H9v-2z"/></svg>
+                <div class="meta"><strong>Gemini Free</strong><small>هتاخد اشتراك ‏Gemini لمدة سنه كامله </small></div>
+            </a>
+            <a class="link" href="https://profile-readme-generator.com/" target="_blank" rel="noopener" data-key="readme-generator">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM9 11h6v2H9v-2z"/></svg>
+                <div class="meta"><strong>Readme Generator</strong><small>أنشئ ملفات README احترافية</small></div>
+            </a>
+            <a class="link" href="https://www.cssportal.com/" target="_blank" rel="noopener" data-key="css-portal">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 2H3c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 18H5v-2h3v2zm-3-4V8h3l2-2h-5V5h7l-2 2v1H8v4h3v2H5zm12 0h-3v-4h3V8h-3V5h5v9z"/></svg>
+                <div class="meta"><strong>CSS Portal</strong><small>أدوات CSS ومولدات</small></div>
+            </a>
+            <a class="link" href="https://docs.emmet.io/cheatsheet-a5.pdf" target="_blank" rel="noopener" data-key="emmet-cheatsheet">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.17 12H9.5c-.83 0-1.5.67-1.5 1.5v2c0 .83.67 1.5 1.5 1.5h3.67v2.25l2.25-2.25L13.17 15h-3.67c-.28 0-.5-.22-.5-.5v-2c0-.28.22-.5.5-.5h3.67l2.25-2.25L13.17 12zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                <div class="meta"><strong>Emmet Cheatsheet</strong><small>اختصارات Emmet لسرعة الكود</small></div>
+            </a>
+            <a class="link" href="https://jsoncrack.com/?utm_source=chatgpt.com" target="_blank" rel="noopener" data-key="jsoncrack">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2zm0 18c4.41 0 8-3.59 8-8s-3.59-8-8-8-8 3.59-8 8 3.59 8 8 8zm-2-12h4v4h-4v-4zm-4 4h4v4h-4v-4zm8 0h4v4h-4v-4zM8 8h4v4h-4V8z"/></svg>
+                <div class="meta"><strong>JSON Crack</strong><small>تنسيق وعرض JSON</small></div>
+            </a>
+            <a class="link" href="https://rapidapi.com" target="_blank" rel="noopener" data-key="rapidapi">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2zm0 18c4.41 0 8-3.59 8-8s-3.59-8-8-8-8 3.59-8 8 3.59 8 8 8zm-4.5-9.5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5S5.17 13 6 13s1.5-.67 1.5-1.5zm3-1.5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5.67 1.5 1.5 1.5 1.5-.67 1.5-1.5zm3 0c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5.67 1.5 1.5 1.5 1.5-.67 1.5-1.5zm3 1.5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5.67 1.5 1.5 1.5 1.5-.67 1.5-1.5z"/></svg>
+                <div class="meta"><strong>RapidAPI</strong><small>مكتبة API للمطورين</small></div>
+            </a>
+            <a class="link" href="http://flukeout.github.io/" target="_blank" rel="noopener" data-key="css-game">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c-5.52 0-10 4.48-10 10s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM9 13h6v-2H9v2z"/></svg>
+                <div class="meta"><strong>CSS Diner</strong><small>لعبة لتعلم CSS</small></div>
+            </a>
+        </div>
+    </div>
+</div>
+
+    <script>
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('hide');
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, 3000);
+        }
+
+        const KEY = "link-in-bio:clicks";
+        const clicks = JSON.parse(localStorage.getItem(KEY) || "{}");
+
+        function save() {
+            localStorage.setItem(KEY, JSON.stringify(clicks));
+        }
+
+        function renderStats() {
+            const stats = document.getElementById('stats');
+            stats.innerHTML = '';
+            
+            const totalClicks = Object.values(clicks).reduce((sum, current) => sum + current, 0);
+
+            Object.entries(clicks).forEach(([k, v]) => {
+                const el = document.createElement('div');
+                el.className = 'stat';
+                
+                const percentage = totalClicks > 0 ? (v / totalClicks) * 100 : 0;
+                
+                el.innerHTML = `
+                    <div class="progress-bar" style="width: ${percentage}%;"></div>
+                    <span>${k}: ${v} نقرات</span>
+                `;
+                stats.appendChild(el);
+            });
+
+            if (!Object.keys(clicks).length) {
+                const el = document.createElement('div');
+                el.className = 'stat';
+                el.textContent = 'لا توجد نقرات بعد';
+                stats.appendChild(el);
+            }
+        }
+
+        document.querySelectorAll('a.link').forEach(a => {
+            a.addEventListener('click', () => {
+                const k = a.dataset.key || new URL(a.href).hostname;
+                clicks[k] = (clicks[k] || 0) + 1;
+                save();
+                renderStats();
+            });
+        });
+
+        document.getElementById('copy').addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(location.href);
+                showToast('تم نسخ الرابط بنجاح!');
+            } catch (e) {
+                showToast('لم يتمكن المتصفح من النسخ تلقائيًا.');
+            }
+        });
+
+        document.getElementById('toggleDir').addEventListener('click', () => {
+            const html = document.documentElement;
+            html.dir = html.dir === 'rtl' ? 'ltr' : 'rtl';
+            showToast(`تم تبديل اتجاه الصفحة إلى ${html.dir.toUpperCase()}`);
+        });
+
+        document.getElementById('resetStats').addEventListener('click', () => {
+            localStorage.removeItem(KEY);
+            location.reload();
+        });
+
+        // تشغيل شاشة الترحيب
+        window.addEventListener('load', () => {
+            const splashScreen = document.getElementById('splash-screen');
+            const mainContent = document.querySelector('.wrap');
+
+            setTimeout(() => {
+                splashScreen.classList.add('fade-out');
+                mainContent.style.opacity = '1';
+
+                splashScreen.addEventListener('transitionend', () => {
+                    splashScreen.remove();
+                });
+            }, 5000);
+            
+            renderStats();
+        });
+
+        // وظائف النافذة المنبثقة الجديدة
+        const openModalBtn = document.getElementById('open-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        const contentModal = document.getElementById('content-modal');
+        
+        openModalBtn.addEventListener('click', () => {
+            contentModal.classList.add('visible');
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            contentModal.classList.remove('visible');
+        });
+
+        contentModal.addEventListener('click', (e) => {
+            if (e.target === contentModal) {
+                contentModal.classList.remove('visible');
+            }
+        });
+    </script>
+</body>
+</html>
